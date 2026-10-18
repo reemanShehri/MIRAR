@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MIRAR | The team that builds the future</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+/* ===== Tokens ===== */
+
+
+/* ===== Achievements Section ===== */
+.ach-section {
+  padding: 16vh 6vw;
+  max-width: 1150px;
+  margin: auto;
+  text-align: center;
+}
+.ach-head {
+  margin-bottom: 3rem;
+}
+.ach-head h2 {
+  font-size: clamp(2rem, 5vw, 3.6rem);
+  font-weight: 900;
+  margin-bottom: 1rem;
+}
+.ach-head p {
+  color: var(--mut);
+  font-size: 1.15rem;
+  max-width: 700px;
+  margin: auto;
+}
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+.ach-img-box {
+  border-radius: 26px;
+  overflow: hidden;
+  border: 1px solid rgba(243, 235, 221, .16);
+  background: rgba(255, 255, 255, .04);
+  box-shadow: 0 10px 30px rgba(0,0,0,.2);
+  aspect-ratio: 4/3; /* بيخلي الصورتين نفس المقاس بالضبط */
+}
+.ach-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+.ach-img-box:hover img {
+  transform: scale(1.05); /* زوم خفيف لما تمرر الماوس */
+}
+
+
+
+
+/* حاوية الصورة */
+.ph {
+  justify-self: center;
+  width: clamp(190px, 32vw, 420px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font: 800 clamp(5rem, 14vw, 11rem) / 1 Syne;
+  color: var(--bg);
+  background: conic-gradient(from 200deg, var(--c), var(--cream), var(--c));
+  box-shadow: 0 0 90px color-mix(in srgb, var(--c) 55%, transparent);
+  transform: translateX(-70px) scale(.85) rotate(8deg);
+  opacity: 0;
+  transition: transform 1s cubic-bezier(.2, .8, .2, 1), opacity .9s;
+  
+  /* هدول السطرين الجداد هما الحل */
+  position: relative; 
+  overflow: hidden;
+}
+
+/* الصورة جوا الحاوية */
+.ph img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+:root{--bg:#0B0F19;--bg2:#141a2b;--cream:#F3EBDD;--y:#FFC93C;--o:#FF7A3D;--g:#10B981;--mut:#9AA3B8;
+color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{margin:0;box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!important}
+body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;overflow-x:hidden;line-height:1.7}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:90}
+a{color:inherit;text-decoration:none}
+h1,h2,.st,#words,.scr b,.sb strong{font-family:Syne,sans-serif;font-weight:800}
+.g{background:linear-gradient(100deg,var(--y),var(--o) 55%,var(--g));-webkit-background-clip:text;background-clip:text;color:transparent}
+.btn{display:inline-block;padding:.8rem 1.7rem;border-radius:999px;font-weight:700;border:1.5px solid var(--cream);transition:background .3s,color .3s;cursor:pointer;background:none;color:var(--cream);font-family:inherit;font-size:1rem}
+.btn:hover{background:var(--cream);color:var(--bg)}
+/* ===== Preloader (fail-safe hides it after 7s even if JS fails) ===== */
+#pre{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-content:center;justify-items:center;gap:1rem;animation:fs .01s 7s forwards}
+@keyframes fs{to{visibility:hidden;opacity:0}}
+#pre svg{width:min(80vw,520px)}
+#pt{font:800 100px Syne,sans-serif;fill:transparent;stroke:var(--y);stroke-width:2;stroke-dasharray:600;letter-spacing:6px}
+#pc{font:700 1.2rem Syne;color:var(--mut)}
+/* ===== Cursor ===== */
+#cur{position:fixed;top:0;left:0;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:var(--y);pointer-events:none;z-index:95;display:none;transition:width .25s,height .25s,margin .25s,background .25s,border .25s}
+#cur.h{width:56px;height:56px;margin:-28px 0 0 -28px;background:transparent;border:2px solid var(--y)}
+@media (hover:hover) and (pointer:fine){#cur{display:block}}
+nav{position:fixed;top:env(safe-area-inset-top,0px);inset-inline:0;z-index:80;display:flex;justify-content:space-between;align-items:center;padding:1rem 5vw;mix-blend-mode:difference}
+nav b{font:800 1.5rem Syne;letter-spacing:.15em}
+/* ===== Hero ===== */
+.hero{height:100vh;min-height:560px;position:relative;display:grid;place-items:center;text-align:center;overflow:hidden;background:radial-gradient(ellipse at 50% 100%,#2a1a3d,var(--bg) 65%)}
+#gl{position:absolute;inset:0;width:100%;height:100%}
+.hl{position:relative;z-index:2;padding:0 4vw}
+#big{font:800 clamp(3.5rem,19vw,19rem)/.85 Syne,sans-serif;letter-spacing:-.04em;direction:ltr;display:flex;justify-content:center;color:var(--cream)}
+#big span{display:inline-block}#big span:nth-child(2n){color:var(--y)}
+.hl p{font-size:clamp(1.2rem,3.4vw,2.2rem);font-weight:700;margin-top:1.5rem}
+.sc{position:absolute;bottom:calc(1.6rem + env(safe-area-inset-bottom,0px));inset-inline:0;text-align:center;color:var(--mut);font-size:.85rem;z-index:2}
+/* ===== Philosophy ===== */
+#phil{padding:22vh 7vw;max-width:1200px;margin:auto}
+#words{font-size:clamp(1.6rem,4vw,3.2rem);line-height:1.45}
+.w{opacity:.14;display:inline-block;margin-inline-end:.3em}
+/* ===== Team (pinned) ===== */
+#team{height:100vh;position:relative;isolation:isolate;overflow:hidden;background:var(--bg)}
+.mem{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:2rem;padding:0 7vw;opacity:0;visibility:hidden;transition:opacity .9s,visibility .9s}
+.mem.on{opacity:1;visibility:visible}
+.mem::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 25% 50%,color-mix(in srgb,var(--c) 38%,transparent),transparent 62%)}
+.ph{justify-self:center;width:clamp(190px,32vw,420px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font:800 clamp(5rem,14vw,11rem)/1 Syne;color:var(--bg);background:conic-gradient(from 200deg,var(--c),var(--cream),var(--c));box-shadow:0 0 90px color-mix(in srgb,var(--c) 55%,transparent);transform:translateX(-70px) scale(.85) rotate(8deg);opacity:0;transition:transform 1s cubic-bezier(.2,.8,.2,1),opacity .9s}
+.mem.on .ph{transform:none;opacity:1}
+.inf{transform:translateY(40px);opacity:0;transition:all .9s .15s}.mem.on .inf{transform:none;opacity:1}
+.inf small{color:var(--c);font-weight:700;font-size:1.1rem}
+.inf h2{font-size:clamp(2rem,4.6vw,4rem);font-weight:900;line-height:1.1;margin:.3rem 0 1rem}
+.tg{display:inline-block;margin:.2rem .4rem .2rem 0;padding:.2rem .9rem;border-radius:99px;border:1px solid color-mix(in srgb,var(--c) 70%,transparent);font-size:.9rem}
+.inf .btn{margin-top:1.4rem;border-color:var(--c);color:var(--c)}.inf .btn:hover{background:var(--c);color:var(--bg)}
+#dots{position:absolute;inset-inline-end:2.5vw;top:50%;transform:translateY(-50%);display:grid;gap:.7rem;z-index:3}
+#dots i{width:8px;height:8px;border-radius:50%;background:var(--mut);opacity:.4;transition:all .4s}#dots i.on{height:30px;background:var(--cream);opacity:1}
+/* ===== Kidora ===== */
+#prob{height:100vh;display:grid;place-items:center;position:relative;text-align:center;padding:0 7vw}
+.st{position:absolute;font-size:clamp(1.8rem,6vw,4.6rem);font-weight:900;line-height:1.25;max-width:1100px}
+.st small{display:block;font-size:1rem;color:var(--o);margin-bottom:.8rem}
+#hz{height:100vh;overflow:hidden;display:flex;align-items:center;background:linear-gradient(180deg,var(--bg),#161033 50%,var(--bg))}
+.track{display:flex;gap:3rem;padding:0 8vw;width:max-content;align-items:center}
+.intro{width:min(520px,80vw)}.intro h2{font-size:clamp(3rem,8vw,6.5rem);font-weight:900;line-height:1}.intro p{color:var(--mut);font-size:1.15rem;margin-top:1rem}
+.scr{width:min(290px,70vw);height:min(540px,70vh);border-radius:38px;border:8px solid #222b40;padding:1.4rem;display:flex;flex-direction:column;justify-content:space-between;color:var(--bg);box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.scr b{font-size:1.4rem;line-height:1.2}.scr span{font-size:3.5rem}.scr small{font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem;max-width:1150px;margin:auto;padding:16vh 6vw}
+.sb{border:1px solid rgba(243,235,221,.16);border-radius:26px;padding:1.6rem;background:rgba(255,255,255,.04);backdrop-filter:blur(12px)}
+.sb strong{display:block;font:800 clamp(3rem,7vw,4.6rem)/1 Syne}.sb p{color:var(--mut);margin-top:.5rem}
+/* ===== Marquee ===== */
+#arsenal{padding:14vh 0;overflow:hidden}
+#arsenal h2{text-align:center;font-size:clamp(2rem,5vw,3.6rem);font-weight:900;margin-bottom:3rem}
+.mq{direction:ltr;display:flex;width:max-content;animation:mq 30s linear infinite;margin-bottom:1rem}
+.mq.r{animation-direction:reverse;animation-duration:44s}.mq.f{animation-duration:22s}
+.mq span{font:800 clamp(2.6rem,8vw,6.5rem)/1.15 Syne;white-space:nowrap;padding:0 2.2rem;color:transparent;-webkit-text-stroke:1.5px var(--cream)}
+.mq span:nth-child(3n){color:var(--y);-webkit-text-stroke:0}
+@keyframes mq{to{transform:translateX(-50%)}}
+/* ===== Contact ===== */
+#contact{padding:14vh 6vw 8vh;max-width:900px;margin:auto;text-align:center}
+#contact h2{font-size:clamp(2rem,5vw,3.8rem);font-weight:900;line-height:1.2;margin-bottom:2.5rem}
+.chat{background:var(--bg2);border:1px solid rgba(243,235,221,.14);border-radius:28px;padding:1.2rem;text-align:start}
+#msgs{height:300px;overflow:auto;display:flex;flex-direction:column;gap:.7rem;padding:.5rem}
+.b,.u{max-width:80%;padding:.7rem 1.1rem;border-radius:20px;animation:pop .4s}
+.b{background:rgba(243,235,221,.1);border-end-start-radius:4px}.u{background:linear-gradient(100deg,var(--y),var(--o));color:var(--bg);font-weight:700;align-self:flex-end;border-end-end-radius:4px}
+@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.96)}}
+.chat form{display:flex;gap:.6rem;margin-top:.8rem}
+.chat input{flex:1;padding:.85rem 1.2rem;border-radius:999px;border:1px solid rgba(243,235,221,.2);background:var(--bg);color:var(--cream);font:inherit;outline:none}
+.chat input:focus{border-color:var(--y);box-shadow:0 0 0 4px rgba(255,201,60,.18)}
+.soc{display:flex;gap:1rem;justify-content:center;margin-top:3rem;flex-wrap:wrap}
+.soc a{width:64px;height:64px;border-radius:50%;border:1px solid rgba(243,235,221,.25);display:grid;place-items:center;font:700 1rem Syne;will-change:transform;transition:background .3s,color .3s}
+.soc a:hover{background:var(--y);color:var(--bg);border-color:var(--y)}
+footer{text-align:center;color:var(--mut);padding:2rem;font-size:.9rem}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--y);outline-offset:3px}
+@media (max-width:760px){.mem{grid-template-columns:1fr;align-content:center;gap:1rem;text-align:center}.ph{width:min(46vw,200px)}#dots{inset-inline-end:1.5vw}}
+@media (prefers-reduced-motion:reduce){.mq{animation:none}}
+</style>
+</head>
+<body>
+<div id="pre"><svg viewBox="0 0 520 140"><text id="pt" x="260" y="105" text-anchor="middle">MIRAR</text></svg><div id="pc">0</div></div>
+<div id="cur"></div>
+<nav><b>MIRAR</b><a class="btn mag" href="#contact" style="padding:.4rem 1.2rem">Contact</a></nav>
+
+<header class="hero">
+  <canvas id="gl"></canvas>
+  <div class="hl">
+    <h1 id="big" aria-label="MIRAR"></h1>
+    <p class="g">A team that builds the future... not waits for it.</p>
+  </div>
+  <div class="sc">Scroll to explore</div>
+</header>
+
+<section id="phil">
+  <p id="words">Why do we exist? We don’t just build apps, we build awareness. We bring together management, technology, marketing and finance to make a positive difference in children’s lives.</p>
+</section>
+
+<section id="team"><div id="dots"></div></section>
+
+<section id="prob">
+  <div class="st"><small>The problem</small>Digital content for kids with no purpose.</div>
+  <div class="st"><small>The problem</small>Values that get memorized, not lived.</div>
+  <div class="st"><small>The problem</small>A cultural gap that grows with every screen.</div>
+</section>
+
+<section id="hz">
+  <div class="track">
+    <div class="intro"><h2 class="g">Kidora</h2><p>An adventure-learning platform for kids aged 6 to 12. Children live the value inside the story instead of memorizing it.</p></div>
+    <div class="scr" style="background:linear-gradient(160deg,#FFC93C,#FF7A3D)"><span>⭐</span><div><small>Home</small><br><b>Your journey starts here</b></div></div>
+    <div class="scr" style="background:linear-gradient(160deg,#10B981,#9be8cf)"><span>📖</span><div><small>AI stories</small><br><b>A story made just for you</b></div></div>
+    <div class="scr" style="background:linear-gradient(160deg,#FF7A3D,#ffc29c)"><span>🎯</span><div><small>Daily quests</small><br><b>One small mission a day</b></div></div>
+    <div class="scr" style="background:linear-gradient(160deg,#b9a7ff,#FFC93C)"><span>🎮</span><div><small>Games</small><br><b>Play and learn values</b></div></div>
+  </div>
+</section>
+
+<section id="achievements" class="ach-section">
+  <div class="ach-head">
+    <h2 class="g">Our Achievements</h2>
+<p>We are beyond proud to announce that <strong>MIRAR</strong> won the <strong>YIH Hackathon</strong> with our project <strong>Kidora</strong>.</p>  </div>
+  
+  <div class="ach-grid">
+    <!-- الصورة الأولى -->
+    <div class="ach-img-box">
+      <img src="assets/win3.png" alt="Winning Kidora" loading="lazy">
+    </div>
+    <!-- الصورة الثانية -->
+    <div class="ach-img-box">
+      <img src="assets/win2.png" alt="MIRAR Team Winning" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section id="arsenal">
+  <h2>Our arsenal</h2>
+  <div class="mq" data-t="React · UI/UX · Growth Hacking · Financial Modeling · AI Integration"></div>
+  <div class="mq r" data-t="Brand Strategy · Prototyping · Business Development · Storytelling · Product Design"></div>
+  <div class="mq f" data-t="Leadership · Digital Marketing · Feasibility Study · Break-even · Funding"></div>
+</section>
+
+<section id="contact">
+  <h2>Got a crazy idea?<br><span class="g">We’re the team that builds it.</span></h2>
+  <div class="chat">
+    <div id="msgs"></div>
+    <form id="cf"><input id="ci" autocomplete="off" aria-label="Type your message" placeholder="Type here..."><button class="btn mag" type="submit">Send</button></form>
+  </div>
+<div class="soc">
+  <a class="mag" href="https://www.instagram.com/mirar__kidorra/" target="_blank" aria-label="Instagram">IG</a>
+  <a class="mag" href="https://www.linkedin.com/in/mirar-kidoora-undefined-aa181a443/?isSelfProfile=true" target="_blank" aria-label="LinkedIn">in</a>
+  <a class="mag" href="https://x.com/mirarxh?s=11" target="_blank" aria-label="X">X</a>
+  <a class="mag" href="https://www.facebook.com/profile.php?id=61595443766993&mibextid=wwXIfr&rdid=ysFVwPOO8O3UpiRW&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1QmieKgfJm%2F%3Fmibextid%3DwwXIfr#" target="_blank" aria-label="Facebook">FB</a>
+  <a class="mag" href="https://www.youtube.com/@mirar_kidoora" target="_blank" aria-label="YouTube">YT</a>
+  <a class="mag" href="mailto:mirarkidoora@gmail.com" aria-label="Email">@</a>
+</div>
+</section>
+<footer>© 2026 MIRAR</footer>
+
+<script>
+/* ===== Data ===== */
+const team=[
+ {n:"Ibrahim Sharab",   r:"Technology · CEO", i:"I", c:"#4F8CFF",
+  s:["Leadership","Strategy","Platform vision"],
+  img:"assets/team/ibrahim.png",  cv:"assets/cv/ibrahim.pdf"},
+
+ {n:"Reeman Alshehri",  r:"Technology · CTO", i:"R", c:"#FF7A3D",
+  s:["Programming","Platform development","User interfaces"],
+  img:"assets/team/reeman.png",   
+  cv:"https://drive.google.com/file/d/1G5Oofdq3XkPklugbf5lDgCQtVas-_M8D/view?usp=drive_link"},
+
+ {n:"Abdullah Al-Astal",r:"Operations · COO", i:"A", c:"#10B981",
+  s:["Operations","Process","Execution"],
+  img:"assets/team/abdallah.png", cv:"assets/cv/abdullah.pdf"},
+
+ {n:"Razan Wadi",       r:"Business · CBO",   i:"R", c:"#FFC93C",
+  s:["Business strategy","Partnerships","Growth"],
+  img:"assets/team/razan.png",    cv:"assets/cv/razan.pdf"},
+
+ {n:"Majed Shubeir",    r:"Finance · CFO",    i:"M", c:"#B79CFF",
+  s:["Financial analysis","Financial modeling","Feasibility studies"],
+  img:"assets/team/majed.png",    cv:"assets/cv/majed.pdf"}
+];
+
+const tm=document.getElementById('team');
+tm.insertAdjacentHTML('beforeend', team.map(m=>`
+<div class="mem" style="--c:${m.c}">
+  <div class="ph">${m.i}
+    ${m.img ? `<img src="${m.img}" alt="${m.n}" loading="lazy"
+                    onerror="this.style.display='none'">` : ''}
+  </div>
+  <div class="inf">
+    <small>${m.r}</small>
+    <h2>${m.n}</h2>
+    ${m.s.map(x=>`<span class="tg">${x}</span>`).join('')}
+    <br>
+    ${m.cv
+      ? `<a class="btn mag" href="${m.cv}" target="_blank" rel="noopener">Download CV</a>`
+      : `<a class="btn mag" href="#contact">Contact</a>`}
+  </div>
+</div>`).join(''));
+const mems=[...tm.querySelectorAll('.mem')],dots=document.getElementById('dots');
+dots.innerHTML=team.map(()=>'<i></i>').join('');
+const dd=[...dots.children];
+function setM(i){mems.forEach((m,j)=>m.classList.toggle('on',j===i));dd.forEach((d,j)=>d.classList.toggle('on',j===i))}setM(0);
+
+/* hero letters + marquee text + word split */
+const big=document.getElementById('big');"MIRAR".split('').forEach(l=>big.insertAdjacentHTML('beforeend',`<span>${l}</span>`));
+document.querySelectorAll('.mq').forEach(m=>{const h=m.dataset.t.split(' · ').map(t=>`<span>${t}</span>`).join('');m.innerHTML=h+h});
+const wp=document.getElementById('words');wp.innerHTML=wp.textContent.trim().split(/\s+/).map(w=>`<span class="w">${w}</span>`).join(' ');
+
+/* ===== Smooth scroll (Lenis) + GSAP ===== */
+gsap.registerPlugin(ScrollTrigger);
+const lenis=new Lenis();lenis.stop();
+lenis.on('scroll',ScrollTrigger.update);
+gsap.ticker.add(t=>lenis.raf(t*1000));gsap.ticker.lagSmoothing(0);
+
+/* ===== Preloader: draw logo + counter, then reveal ===== */
+const pre=document.getElementById('pre'),pc=document.getElementById('pc'),o={v:0};
+gsap.fromTo('#pt',{strokeDashoffset:600},{strokeDashoffset:0,duration:2.2,ease:'power2.inOut'});
+gsap.to(o,{v:100,duration:2.4,ease:'power1.inOut',onUpdate:()=>pc.textContent=Math.round(o.v),onComplete:()=>{
+  gsap.to('#pt',{fill:'#FFC93C',duration:.4});
+  gsap.to(pre,{yPercent:-100,duration:1,delay:.4,ease:'power4.inOut',onComplete:()=>{pre.remove();lenis.start()}});
+  gsap.from('#big span',{yPercent:110,rotate:6,opacity:0,duration:1.2,stagger:.1,delay:.7,ease:'power4.out'});
+  gsap.from('.hl p',{opacity:0,y:30,duration:1,delay:1.5});
+}});
+
+/* ===== Philosophy: word-by-word reveal ===== */
+gsap.to('.w',{opacity:1,stagger:.12,ease:'none',scrollTrigger:{trigger:'#phil',start:'top 75%',end:'bottom 55%',scrub:true}});
+
+/* ===== Team: pinned, member changes with scroll ===== */
+ScrollTrigger.create({trigger:'#team',pin:true,end:'+=400%',onUpdate:s=>setM(Math.min(4,Math.floor(s.progress*5)))});
+
+/* ===== Problem: pinned statements fade in/out ===== */
+const tl=gsap.timeline({scrollTrigger:{trigger:'#prob',pin:true,scrub:1,end:'+=240%'}});
+gsap.utils.toArray('.st').forEach((s,i)=>{tl.fromTo(s,{opacity:0,y:60},{opacity:1,y:0,duration:1}).to(s,{opacity:0,y:-60,duration:1},'+=.6')});
+gsap.set('.st',{opacity:0});
+
+/* ===== Solution: vertical scroll drives horizontal movement ===== */
+const trk=document.querySelector('.track'),dist=()=>trk.offsetWidth-innerWidth;
+gsap.to(trk,{x:()=>-dist(),ease:'none',scrollTrigger:{trigger:'#hz',pin:true,scrub:1,end:()=>'+='+dist(),invalidateOnRefresh:true}});
+
+/* ===== Counters ===== */
+document.querySelectorAll('[data-n]').forEach(el=>{const n=+el.dataset.n,c={v:0};ScrollTrigger.create({trigger:el,start:'top 90%',once:true,onEnter:()=>{gsap.to(c,{v:n,duration:1.8,ease:'power2.out',onUpdate:()=>el.textContent=Math.round(c.v)});gsap.fromTo(el.closest('.sb'),{scale:.94},{scale:1,duration:.9,ease:'elastic.out(1,.5)'})}})});
+
+/* ===== Three.js hero: floating geometry + particles ===== */
+let mx=0,my=0;
+addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5});
+try{
+const cv=document.getElementById('gl'),R=new THREE.WebGLRenderer({canvas:cv,alpha:true,antialias:true}),S=new THREE.Scene(),C=new THREE.PerspectiveCamera(55,1,.1,100);C.position.z=8;
+const ico=new THREE.Mesh(new THREE.IcosahedronGeometry(2.1,1),new THREE.MeshBasicMaterial({color:0xFFC93C,wireframe:true,transparent:true,opacity:.35}));S.add(ico);
+const N=700,pos=new Float32Array(N*3),col=new Float32Array(N*3),pal=[[1,.79,.24],[1,.48,.24],[.06,.73,.5]];
+for(let i=0;i<N;i++){const r=3.5+Math.random()*6,a=Math.random()*6.28,b=Math.acos(2*Math.random()-1);pos.set([r*Math.sin(b)*Math.cos(a),r*Math.sin(b)*Math.sin(a),r*Math.cos(b)],i*3);col.set(pal[i%3],i*3)}
+const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));
+const pts=new THREE.Points(g,new THREE.PointsMaterial({size:.05,vertexColors:true}));S.add(pts);
+const rs=()=>{const w=cv.clientWidth,h=cv.clientHeight;R.setPixelRatio(Math.min(devicePixelRatio,2));R.setSize(w,h,false);C.aspect=w/h;C.updateProjectionMatrix()};rs();addEventListener('resize',rs);
+R.setAnimationLoop(t=>{ico.rotation.x=t*.00015+my;ico.rotation.y=t*.0002+mx;pts.rotation.y=t*.00005;C.position.x+=(mx*1.5-C.position.x)*.04;C.position.y+=(-my*1.2-C.position.y)*.04;C.lookAt(0,0,0);R.render(S,C)});
+}catch(e){}
+
+/* ===== Mouse parallax on hero text ===== */
+const qx=gsap.quickTo('.hl','x',{duration:.8}),qy=gsap.quickTo('.hl','y',{duration:.8});
+addEventListener('pointermove',e=>{qx((e.clientX/innerWidth-.5)*-50);qy((e.clientY/innerHeight-.5)*-30)});
+
+/* ===== Custom cursor + magnetic buttons ===== */
+const cur=document.getElementById('cur'),cx=gsap.quickTo(cur,'x',{duration:.25}),cy=gsap.quickTo(cur,'y',{duration:.25});
+addEventListener('pointermove',e=>{cx(e.clientX);cy(e.clientY)});
+document.addEventListener('mouseover',e=>cur.classList.toggle('h',!!e.target.closest('a,button,input')));
+document.querySelectorAll('.mag').forEach(b=>{b.addEventListener('pointermove',e=>{const r=b.getBoundingClientRect();gsap.to(b,{x:(e.clientX-r.left-r.width/2)*.4,y:(e.clientY-r.top-r.height/2)*.4,duration:.3})});b.addEventListener('pointerleave',()=>gsap.to(b,{x:0,y:0,duration:.6,ease:'elastic.out(1,.4)'}))});
+
+/* ===== Chat-style contact (mailto version) ===== */
+const msgs = document.getElementById('msgs'), ci = document.getElementById('ci');
+let step = 0, nm = '', mail = '', idea = '';
+
+const bot = [
+  'Welcome! We’re the MIRAR team. What’s your name?',
+  () => `Nice to meet you, ${nm}. What’s your email?`,
+  'Last one: tell us about your crazy idea.',
+  'Got your idea! Opening your mail app to send it to us...'
+];
+
+function say(t, c) {
+  const d = document.createElement('div');
+  d.className = c;
+  d.textContent = typeof t === 'function' ? t() : t;
+  msgs.append(d);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+say(bot[0], 'b');
+
+document.getElementById('cf').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = ci.value.trim();
+  if (!v || step > 2) return;
+  
+  say(v, 'u');
+  ci.value = '';
+
+  // تجميع البيانات
+  if (step === 0) nm = v;
+  if (step === 1) mail = v;
+  if (step === 2) idea = v;
+
+  step++;
+
+  if (step <= 2) {
+    // نكمل الشات
+    setTimeout(() => say(bot[step], 'b'), 600);
+  } else {
+    // خلصنا الأسئلة، هلق بنفتح الإيميل
+    ci.disabled = true;
+    ci.placeholder = "Opening mail app...";
+
+    setTimeout(() => {
+      say(bot[3], 'b');
+      
+      // تجهيز الإيميل
+      const subject = encodeURIComponent(`New Idea from ${nm}`);
+      const body = encodeURIComponent(`Name: ${nm}\nEmail: ${mail}\nIdea: ${idea}`);
+      
+      // فتح تطبيق الإيميل (mailto)
+      window.location.href = `mailto:mirarkidoora@gmail.com?subject=${subject}&body=${body}`;
+      
+      // إعادة الفورم زي ما كان بعد ثانية
+      setTimeout(() => {
+        ci.disabled = false;
+        ci.placeholder = "Type here...";
+        step = 0; // بنرجع نعيد الشات من الأول
+      }, 1500);
+
+    }, 800);
+  }
+});
+
+</script>
+</body>
+</html>
